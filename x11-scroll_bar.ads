@@ -60,7 +60,7 @@ private
 	type Scroll_Bar_Type is new Panel_Type with record
 		orientation : Orientation_Type := Vertical;
 		minimum     : Integer := 1;
-		maximum     : Integer := 100;
+		maximum     : Integer := 10;
 		increment   : Positive := 1;
 		value       : Integer := 1;
 		start       : Button_Type;

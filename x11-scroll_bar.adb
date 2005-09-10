@@ -15,6 +15,8 @@ package body X11.Scroll_Bar is
 
 	procedure Paint(obj : in out Panel_Type'class);
 	procedure Paint_Bar(bar : in out Scroll_Bar_Type);
+	procedure Draw_Indicator(gc : in Graphics_Type;
+	                         x, y, width, height : in Integer);
 
 	procedure Increase_Listener(button : in out Button_Type'class);
 	procedure Decrease_Listener(button : in out Button_Type'class);
@@ -28,8 +30,8 @@ package body X11.Scroll_Bar is
 
 		Add_Painter(bar.center, Paint'access);
 
-		Set_Text(bar.start, "-");
-		Set_Text(bar.stop, "+");
+		Set_Text(bar.start, " - ");
+		Set_Text(bar.stop, " + ");
 
 		-- Default orientation is vertical
 		Add(bar, bar.start, Border_North);
@@ -153,51 +155,70 @@ package body X11.Scroll_Bar is
 	end Paint;
 
 	procedure Paint_Bar(bar : in out Scroll_Bar_Type) is
-		offset : Float;
-		len    : Integer;
+		offset : Float;     -- Offset of the indicator.
+		len    : Float;     -- Length of the indicator.
 		size   : Size_Type;
 		gc     : Graphics_Type;
 	begin
 
 		size := Get_Size(bar.center);
 
-		if bar.maximum > bar.minimum then
-			len := bar.increment / (bar.maximum - bar.minimum);
-			if len < 5 then
-				len := 5;
-			end if;
-			offset := Float(bar.value) / Float(bar.maximum - bar.minimum);
+		-- Compute the length of the value indicator.
+		len := Float(bar.maximum - bar.minimum);
+		if len = 0.0 then
+			len := 1.0;
+		end if;
+		if bar.orientation = Vertical then
+			len := Float(size.height) / len;
 		else
-			len := 5;
-			offset := 0.0;
+			len := Float(size.width) / len;
 		end if;
 
+		-- Compute the value indicator offset.
+		offset := Float(bar.value) / Float(bar.maximum - bar.minimum);
 		if bar.orientation = Vertical then
-			offset := offset * Float(size.height - len);
+			offset := offset * (Float(size.height) - len);
 		else
-			offset := offset * Float(size.width - len);
+			offset := offset * (Float(size.width) - len);
 		end if;
-		offset := offset - Float(len);
+
+		offset := offset - len;
 		if offset < 0.0 then
 			offset := 0.0;
 		end if;
 
 		Clear(bar.center);
 		Create(gc, Object_Type(bar.center).id);
-		Set_Foreground(gc, Blue_Color);
 
-		if len mod 2 /= 0 then
-			len := len + 1;
-		end if;
 		if bar.orientation = Vertical then
-			Draw_Rectangle(gc, 0, Integer(offset), size.width - 1, len);
+			Draw_Indicator(gc, 0, Integer(offset), size.width - 1,
+				Integer(Float'ceiling(len)));
 		else
-			Draw_Rectangle(gc, Integer(offset), 0, len, size.height - 1);
+			Draw_Indicator(gc, Integer(offset), 0, Integer(Float'ceiling(len)),
+				size.height - 1);
 		end if;
 
 		Destroy(gc);
 
 	end Paint_Bar;
+
+	procedure Draw_Indicator(gc : in Graphics_Type;
+									 x, y, width, height : in Integer) is
+		color_up   : Color_Type := Lighten_Color(Gray_Color);
+		color_down : Color_Type := Darken_Color(Gray_Color);
+	begin
+		if width > 1 and then height > 1 then
+
+			Set_Foreground(gc, color_up);
+			Draw_Line(gc, x, y, x + width, y);
+			Draw_Line(gc, x, y + 1, x, y + height);
+
+			Set_Foreground(gc, color_down);
+			Draw_Line(gc, x + width, y + 1, x + width, y + height);
+			Draw_Line(gc, x + 1, y + height, x + width, y + height);
+
+		end if;
+	end Draw_Indicator;
 
 	procedure Increase_Listener(button : in out Button_Type'class) is
 		panel     : Panel_Pointer := Get_Parent(button);

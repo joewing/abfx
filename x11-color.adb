@@ -108,7 +108,7 @@ package body X11.Color is
 
 	function Gray_Color return Color_Type is
 	begin
-		return Get_Color(0.5, 0.5, 0.5);
+		return Get_Color(0.75, 0.75, 0.75);
 	end Gray_Color;
 
 	function Default_Foreground return Color_Type is
