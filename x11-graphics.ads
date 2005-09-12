@@ -37,6 +37,12 @@ package X11.Graphics is
 	procedure Draw_Rectangle(g : in Graphics_Type;
 		x, y : in Integer; width, height : in Natural);
 
+	procedure Draw_Border(g             : in Graphics_Type;
+	                      x, y          : in Integer;
+	                      width, height : in Natural;
+	                      border        : in Border_Type := Up_Border;
+								 color         : in Color_Type := Gray_Color);
+
 private
 
 	type Graphics_Type is record

@@ -124,68 +124,8 @@ package body X11.Panel.Label is
 		Set_Font(np.graphics, np.font);
 		Print(np.graphics, x, y, To_String(np.text));
 
-		case np.border is
-			when No_Border =>
-				null;
-			when Line_Border =>
-				Draw_Line(np.graphics, 0, 0, np.size.width - 1, 0);
-				Draw_Line(np.graphics, 0, 0, 0, np.size.height - 1);
-				Draw_Line(np.graphics, np.size.width - 1, 0,
-					np.size.width - 1, np.size.height - 1);
-				Draw_Line(np.graphics, 0, np.size.height - 1,
-					np.size.width - 1, np.size.height - 1);
-			when Up_Border =>
-				Set_Foreground(np.graphics, Darken_Color(np.background));
-				Draw_Line(np.graphics, 0, 0, np.size.width - 1, 0);
-				Draw_Line(np.graphics, 0, 0, 0, np.size.height - 1);
-				Draw_Line(np.graphics, np.size.width - 1, 0,
-					np.size.width - 1, np.size.height - 1);
-				Draw_Line(np.graphics, 0, np.size.height - 1,
-					np.size.width - 1, np.size.height - 1);
-				Draw_Line(np.graphics, 1, np.size.height - 2,
-					np.size.width - 2, np.size.height - 2);
-				Draw_Line(np.graphics, np.size.width - 2, 1,
-					np.size.width - 2, np.size.height - 3);
-				Set_Foreground(np.graphics, Lighten_Color(np.background));
-				Draw_Line(np.graphics, 1, 1, np.size.width - 3, 1);
-				Draw_Line(np.graphics, 1, 2, 1, np.size.height - 3);
-			when Down_Border =>
-				Set_Foreground(np.graphics, Darken_Color(np.background));
-				Draw_Line(np.graphics, 0, 0, np.size.width - 1, 0);
-				Draw_Line(np.graphics, 0, 0, 0, np.size.height - 1);
-				Draw_Line(np.graphics, np.size.width - 1, 0,
-					np.size.width - 1, np.size.height - 1);
-				Draw_Line(np.graphics, 0, np.size.height - 1,
-					np.size.width - 1, np.size.height - 1);
-				Draw_Line(np.graphics, 1, 1, np.size.width - 3, 1);
-				Draw_Line(np.graphics, 1, 2, 1, np.size.height - 3);
-				Set_Foreground(np.graphics, Lighten_Color(np.background));
-				Draw_Line(np.graphics, 1, np.size.height - 2,
-					np.size.width - 2, np.size.height - 2);
-				Draw_Line(np.graphics, np.size.width - 2, 1,
-					np.size.width - 2, np.size.height - 3);
-			when Bevel_Border =>
-				Set_Foreground(np.graphics, Darken_Color(np.background));
-				Draw_Line(np.graphics, 0, 0, np.size.width - 1, 0);
-				Draw_Line(np.graphics, 0, 0, 0, np.size.height - 1);
-				Draw_Line(np.graphics, np.size.width - 1, 0,
-					np.size.width - 1, np.size.height - 1);
-				Draw_Line(np.graphics, 0, np.size.height - 1,
-					np.size.width - 1, np.size.height - 1);
-				Draw_Line(np.graphics, 1, np.size.height - 2,
-					np.size.width - 2, np.size.height - 2);
-				Draw_Line(np.graphics, np.size.width - 2, 1,
-					np.size.width - 2, np.size.height - 3);
-				Draw_Line(np.graphics, 2, 2, np.size.width - 3, 2);
-				Draw_Line(np.graphics, 3, 3, 3, np.size.height - 3);
-				Set_Foreground(np.graphics, Lighten_Color(np.background));
-				Draw_Line(np.graphics, 1, 1, np.size.width - 3, 1);
-				Draw_Line(np.graphics, 1, 2, 1, np.size.height - 3);
-				Draw_Line(np.graphics, 2, np.size.height - 3,
-					np.size.width - 3, np.size.height - 3);
-				Draw_Line(np.graphics, np.size.width - 3, 2,
-					np.size.width - 3, np.size.height - 4);
-		end case;
+		Draw_Border(np.graphics, 0, 0, np.size.width, np.size.height,
+			np.border, np.background);
 
 	end Paint_Label;
 

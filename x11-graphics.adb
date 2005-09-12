@@ -69,5 +69,71 @@ package body X11.Graphics is
 			int(x), int(y), int(width), int(height));
 	end Draw_Rectangle;
 
+	procedure Draw_Border(g             : in Graphics_Type;
+	                      x, y          : in Integer;
+	                      width, height : in Natural;
+	                      border        : in Border_Type := Up_Border;
+	                      color         : in Color_Type := Gray_Color) is
+	begin
+
+		case border is
+			when No_Border =>
+				null;
+			when Line_Border =>
+				Set_Foreground(g, color);
+				Draw_Line(g, x, y, width - 1, y);
+				Draw_Line(g, x, y, x, height - 1);
+				Draw_Line(g, x + width - 1, y, x + width - 1, y + height - 1);
+				Draw_Line(g, x, y + height - 1, x + width - 1, y + height - 1);
+			when Up_Border =>
+
+				Set_Foreground(g, Darken_Color(color));
+				Draw_Line(g, x, y, x + width - 1, y);
+				Draw_Line(g, x, y, x, y + height - 1);
+				Draw_Line(g, x + width - 1, y, x + width - 1, y + height - 1);
+				Draw_Line(g, x, y + height - 1, x + width - 1, y + height - 1);
+				Draw_Line(g, x + 1, y + height - 2, x + width - 2, y + height - 2);
+				Draw_Line(g, x + width - 2, y + 1, x + width - 2, y + height - 3);
+
+				Set_Foreground(g, Lighten_Color(color));
+				Draw_Line(g, x + 1, y + 1, x + width - 3, y + 1);
+				Draw_Line(g, x + 1, y + 2, x + 1, y + height - 3);
+
+			when Down_Border =>
+
+				Set_Foreground(g, Darken_Color(color));
+				Draw_Line(g, x, y, x + width - 1, y);
+				Draw_Line(g, x, y, x, y + height - 1);
+				Draw_Line(g, x + width - 1, y, x + width - 1, y + height - 1);
+				Draw_Line(g, x, y + height - 1, x + width - 1, y + height - 1);
+				Draw_Line(g, 1, 1, x + width - 3, 1);
+				Draw_Line(g, 1, 2, 1, y + height - 3);
+
+				Set_Foreground(g, Lighten_Color(color));
+				Draw_Line(g, x + 1, y + height - 2, x + width - 2, y + height - 2);
+				Draw_Line(g, x + width - 2, y + 1, x + width - 2, y + height - 3);
+
+			when Bevel_Border =>
+
+				Set_Foreground(g, Darken_Color(color));
+				Draw_Line(g, x, y, x + width - 1, y);
+				Draw_Line(g, x, y, x, y + height - 1);
+				Draw_Line(g, x + width - 1, y, x + width - 1, y + height - 1);
+				Draw_Line(g, x, y + height - 1, x + width - 1, y + height - 1);
+				Draw_Line(g, x + 1, y + height - 2, x + width - 2, y + height - 2);
+				Draw_Line(g, x + width - 2, y + 1, x + width - 2, y + height - 3);
+				Draw_Line(g, x + 2, y + 2, x + width - 3, y + 2);
+				Draw_Line(g, x + 3, y + 3, x + 3, y + height - 3);
+
+				Set_Foreground(g, Lighten_Color(color));
+				Draw_Line(g, x + 1, y + 1, x + width - 3, y + 1);
+				Draw_Line(g, x + 1, y + 2, x + 1, y + height - 3);
+				Draw_Line(g, x + 2, y + height - 3, x + width - 3, y + height - 3);
+				Draw_Line(g, x + width - 3, y + 2, x + width - 3, y + height - 4);
+
+		end case;
+
+	end Draw_Border;
+
 end X11.Graphics;
 

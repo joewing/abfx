@@ -181,11 +181,11 @@ package body X11.Scroll_Bar is
 		Create(gc, Object_Type(bar.center).id);
 
 		if bar.orientation = Vertical then
-			Draw_Indicator(gc, 0, indicator.offset, size.width - 1,
+			Draw_Indicator(gc, 0, indicator.offset, size.width,
 				indicator.length);
 		else
 			Draw_Indicator(gc, indicator.offset, 0, indicator.length,
-				size.height - 1);
+				size.height);
 		end if;
 
 		Destroy(gc);
@@ -194,19 +194,9 @@ package body X11.Scroll_Bar is
 
 	procedure Draw_Indicator(gc : in Graphics_Type;
 									 x, y, width, height : in Integer) is
-		color_up   : Color_Type := Lighten_Color(Gray_Color);
-		color_down : Color_Type := Darken_Color(Gray_Color);
 	begin
 		if width > 1 and then height > 1 then
-
-			Set_Foreground(gc, color_up);
-			Draw_Line(gc, x, y, x + width, y);
-			Draw_Line(gc, x, y + 1, x, y + height);
-
-			Set_Foreground(gc, color_down);
-			Draw_Line(gc, x + width, y + 1, x + width, y + height);
-			Draw_Line(gc, x + 1, y + height, x + width, y + height);
-
+			Draw_Border(gc, x, y, width, height);
 		end if;
 	end Draw_Indicator;
 
