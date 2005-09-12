@@ -13,15 +13,27 @@ package body X11.Scroll_Bar is
 
 	use Listener_List;
 
+	type Indicator_Type is record
+		offset : Natural;
+		length : Natural;
+	end record;
+
 	procedure Paint(obj : in out Panel_Type'class);
 	procedure Paint_Bar(bar : in out Scroll_Bar_Type);
 	procedure Draw_Indicator(gc : in Graphics_Type;
-	                         x, y, width, height : in Integer);
+		x, y, width, height : in Integer);
 
 	procedure Increase_Listener(button : in out Button_Type'class);
 	procedure Decrease_Listener(button : in out Button_Type'class);
+	procedure Button_Listener(
+		panel  : in out Panel_Type'class;
+		x, y   : in Integer;
+		button : in Positive;
+		strike : in Strike_Type);
 
 	procedure Run_Listeners(bar : in out Scroll_Bar_Type);
+
+	function Compute_Indicator(bar : Scroll_Bar_Type) return Indicator_Type;
 
 	procedure Initialize(bar : in out Scroll_Bar_Type) is
 	begin
@@ -41,6 +53,7 @@ package body X11.Scroll_Bar is
 
 		Add_Click_Listener(bar.start, Decrease_Listener'access);
 		Add_Click_Listener(bar.stop, Increase_Listener'access);
+		Add_Button_Listener(bar.center, Button_Listener'access);
 
 	end Initialize;
 
@@ -155,46 +168,23 @@ package body X11.Scroll_Bar is
 	end Paint;
 
 	procedure Paint_Bar(bar : in out Scroll_Bar_Type) is
-		offset : Float;     -- Offset of the indicator.
-		len    : Float;     -- Length of the indicator.
-		size   : Size_Type;
-		gc     : Graphics_Type;
+		indicator : Indicator_Type;
+		size      : Size_Type;
+		gc        : Graphics_Type;
 	begin
 
 		size := Get_Size(bar.center);
 
-		-- Compute the length of the value indicator.
-		len := Float(bar.maximum - bar.minimum);
-		if len = 0.0 then
-			len := 1.0;
-		end if;
-		if bar.orientation = Vertical then
-			len := Float(size.height) / len;
-		else
-			len := Float(size.width) / len;
-		end if;
-
-		-- Compute the value indicator offset.
-		offset := Float(bar.value) / Float(bar.maximum - bar.minimum);
-		if bar.orientation = Vertical then
-			offset := offset * (Float(size.height) - len);
-		else
-			offset := offset * (Float(size.width) - len);
-		end if;
-
-		offset := offset - len;
-		if offset < 0.0 then
-			offset := 0.0;
-		end if;
+		indicator := Compute_Indicator(bar);
 
 		Clear(bar.center);
 		Create(gc, Object_Type(bar.center).id);
 
 		if bar.orientation = Vertical then
-			Draw_Indicator(gc, 0, Integer(offset), size.width - 1,
-				Integer(Float'ceiling(len)));
+			Draw_Indicator(gc, 0, indicator.offset, size.width - 1,
+				indicator.length);
 		else
-			Draw_Indicator(gc, Integer(offset), 0, Integer(Float'ceiling(len)),
+			Draw_Indicator(gc, indicator.offset, 0, indicator.length,
 				size.height - 1);
 		end if;
 
@@ -232,6 +222,58 @@ package body X11.Scroll_Bar is
 		Decrement(Scroll_Bar_Type(panel.all));
 	end Decrease_Listener;
 
+	procedure Button_Listener(
+		panel  : in out Panel_Type'class;
+		x, y   : in Integer;
+		button : in Positive;
+		strike : in Strike_Type) is
+
+		bar   : Scroll_Bar_Pointer := Scroll_Bar_Pointer(Get_Parent(panel));
+		diff  : Integer := bar.maximum - bar.minimum;
+		size  : Integer;
+		index : Integer;
+		indicator : Indicator_Type;
+
+	begin
+
+		if strike /= Press then
+			return;
+		end if;
+
+		if diff <= 0 then
+			return;
+		end if;
+
+		indicator := Compute_Indicator(Scroll_Bar_Type(bar.all));
+
+		if bar.orientation = Vertical then
+			size := Get_Size(bar.center).height;
+			index := y;
+		else
+			size := Get_Size(bar.center).width;
+			index := x;
+		end if;
+
+		index := index + (indicator.length / 2);
+		index := (index * diff) / size;
+		index := index + bar.minimum;
+
+		if index > bar.value then
+			if index - bar.value > 1 then
+				Set_Value(bar.all, index + (index - bar.value) / 2);
+			else
+				Increment(bar.all);
+			end if;
+		elsif index < bar.value then
+			if bar.value - index > 1 then
+				Set_Value(bar.all, index - (bar.value - index) / 2);
+			else
+				Decrement(bar.all);
+			end if;
+		end if;
+
+	end Button_Listener;
+
 	procedure Run_Listeners(bar : in out Scroll_Bar_Type) is
 		size : Natural;
 	begin
@@ -240,6 +282,48 @@ package body X11.Scroll_Bar is
 			Get(bar.listeners, x)(bar);
 		end loop;
 	end Run_Listeners;
+
+	function Compute_Indicator(bar : Scroll_Bar_Type) return Indicator_Type is
+
+		result     : Indicator_Type;
+		difference : Integer := bar.maximum - bar.minimum;
+		length     : Integer;
+		leftovers  : Integer;
+
+	begin
+
+		if bar.orientation = Vertical then
+			length := Get_Size(bar.center).height;
+		else
+			length := Get_Size(bar.center).width;
+		end if;
+
+		if difference < 1 or else length < 1 then
+			result.offset := 0;
+			result.length := 1;
+			return result;
+		end if;
+
+		result.length := Natural(length) / Natural(difference);
+		if result.length < 5 then
+			leftovers := 0;
+			result.length := 5;
+			result.offset := 0; -- To be determined based on remainder.
+		else
+			leftovers := length mod difference;
+			result.offset := (bar.value - bar.minimum) * (length - result.length);
+		end if;
+
+		result.offset := result.offset / difference;
+
+		-- Here pixels lost in division need to be made up.
+		-- This should probably factor into offset instead of length.
+		if bar.value = bar.maximum then
+			result.length := result.length + leftovers;
+		end if;
+
+		return result;
+	end Compute_Indicator;
 
 end X11.Scroll_Bar;
 
