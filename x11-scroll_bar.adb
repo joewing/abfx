@@ -218,10 +218,11 @@ package body X11.Scroll_Bar is
 		button : in Positive;
 		strike : in Strike_Type) is
 
-		bar   : Scroll_Bar_Pointer := Scroll_Bar_Pointer(Get_Parent(panel));
-		diff  : Integer := bar.maximum - bar.minimum;
-		size  : Integer;
-		index : Integer;
+		bar       : Scroll_Bar_Pointer := Scroll_Bar_Pointer(Get_Parent(panel));
+		diff      : Integer := bar.maximum - bar.minimum;
+		size      : Integer;
+		index     : Integer;
+
 		indicator : Indicator_Type;
 
 	begin
@@ -234,8 +235,6 @@ package body X11.Scroll_Bar is
 			return;
 		end if;
 
-		indicator := Compute_Indicator(Scroll_Bar_Type(bar.all));
-
 		if bar.orientation = Vertical then
 			size := Get_Size(bar.center).height;
 			index := y;
@@ -243,24 +242,13 @@ package body X11.Scroll_Bar is
 			size := Get_Size(bar.center).width;
 			index := x;
 		end if;
-
-		index := index + (indicator.length / 2);
+		indicator := Compute_Indicator(Scroll_Bar_Type(bar.all));
+		index := index + indicator.length / 2;
 		index := (index * diff) / size;
 		index := index + bar.minimum;
 
-		if index > bar.value then
-			if index - bar.value > 1 then
-				Set_Value(bar.all, index + (index - bar.value) / 2);
-			else
-				Increment(bar.all);
-			end if;
-		elsif index < bar.value then
-			if bar.value - index > 1 then
-				Set_Value(bar.all, index - (bar.value - index) / 2);
-			else
-				Decrement(bar.all);
-			end if;
-		end if;
+		-- Now index should be the new value.
+		Set_Value(bar.all, index);
 
 	end Button_Listener;
 
@@ -277,8 +265,10 @@ package body X11.Scroll_Bar is
 
 		result     : Indicator_Type;
 		difference : Integer := bar.maximum - bar.minimum;
+
 		length     : Integer;
-		leftovers  : Integer;
+		center     : Integer;
+		size       : Integer;
 
 	begin
 
@@ -294,23 +284,23 @@ package body X11.Scroll_Bar is
 			return result;
 		end if;
 
-		result.length := Natural(length) / Natural(difference);
-		if result.length < 5 then
-			leftovers := 0;
-			result.length := 5;
-			result.offset := 0; -- To be determined based on remainder.
-		else
-			leftovers := length mod difference;
-			result.offset := (bar.value - bar.minimum) * (length - result.length);
+
+		center := ((bar.value - bar.minimum) * length) / difference;
+		size := length / difference;
+		if size < 5 then
+			size := 5;
+		end if;
+		center := center - size / 2;
+
+		if center + size > length then
+			center := length - size;
+		end if;
+		if center < 0 then
+			center := 0;
 		end if;
 
-		result.offset := result.offset / difference;
-
-		-- Here pixels lost in division need to be made up.
-		-- This should probably factor into offset instead of length.
-		if bar.value = bar.maximum then
-			result.length := result.length + leftovers;
-		end if;
+		result.offset := center;
+		result.length := size;
 
 		return result;
 	end Compute_Indicator;
