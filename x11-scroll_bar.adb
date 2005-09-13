@@ -31,6 +31,11 @@ package body X11.Scroll_Bar is
 		button : in Positive;
 		strike : in Strike_Type);
 
+	procedure Motion_Listener(
+		panel  : in out Panel_Type'class;
+		x, y   : in Integer;
+		mask   : in Natural);
+
 	procedure Run_Listeners(bar : in out Scroll_Bar_Type);
 
 	function Compute_Indicator(bar : Scroll_Bar_Type) return Indicator_Type;
@@ -54,6 +59,7 @@ package body X11.Scroll_Bar is
 		Add_Click_Listener(bar.start, Decrease_Listener'access);
 		Add_Click_Listener(bar.stop, Increase_Listener'access);
 		Add_Button_Listener(bar.center, Button_Listener'access);
+		Add_Motion_Listener(bar.center, Motion_Listener'access);
 
 	end Initialize;
 
@@ -251,6 +257,17 @@ package body X11.Scroll_Bar is
 		Set_Value(bar.all, index);
 
 	end Button_Listener;
+
+	procedure Motion_Listener(
+		panel : in out Panel_Type'class;
+		x, y  : in Integer;
+		mask  : in Natural) is
+	begin
+		if mask = 1 then
+			-- Pretend to be a button event.
+			Button_Listener(panel, x, y, 1, Press);
+		end if;
+	end Motion_Listener;
 
 	procedure Run_Listeners(bar : in out Scroll_Bar_Type) is
 		size : Natural;

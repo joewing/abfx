@@ -38,6 +38,9 @@ package X11 is
 		Bevel_Border
 	);
 
+	-- Up to 16 mouse buttons supported.
+	type Button_Mask_Type is mod 2 ** 16;
+
 	type Object_Type is new Limited_Controlled with private;
 
 	display  : Bindings.X11.Types.Display_Pointer := null;

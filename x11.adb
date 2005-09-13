@@ -39,6 +39,7 @@ package body X11 is
 	head        : Listener_Node_Pointer := null;
 	count       : Integer := 0;
 	should_stop : Boolean := false;
+	button_mask : Button_Mask_Type := 0;
 
 	procedure Free is
 		new Ada.Unchecked_Deallocation(Listener_Node, Listener_Node_Pointer);
@@ -133,6 +134,8 @@ package body X11 is
 				case event.t is
 					when Constants.ButtonPress | Constants.ButtonRelease =>
 						id := event.xbutton.window;
+					when Constants.MotionNotify =>
+						id := event.xmotion.window;
 					when Constants.KeyPress | Constants.KeyRelease =>
 						id := event.xkey.window;
 					when Constants.ConfigureNotify =>

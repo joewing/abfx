@@ -29,6 +29,12 @@ package X11.Panel is
 			button : in Positive;
 			strike : in Strike_Type);
 
+	type Motion_Listener_Type is access
+		procedure(
+			panel  : in out Panel_Type'class;
+			x, y   : in Integer;
+			button : in Natural);
+
 	type Key_Listener_Type is access
 		procedure(
 			panel  : in out Panel_Type'class;
@@ -54,6 +60,10 @@ package X11.Panel is
 		panel    : in out Panel_Type'class;
 		listener : in Button_Listener_Type);
 
+	procedure Add_Motion_Listener(
+		panel    : in out Panel_Type'class;
+		listener : in Motion_Listener_Type);
+
 	procedure Add_Key_Listener(
 		panel    : in out Panel_Type'class;
 		listener : in Key_Listener_Type);
@@ -74,6 +84,8 @@ private
 		new X11.Collections.List(Painter_Type);
 	package Button_Listener_List is
 		new X11.Collections.List(Button_Listener_Type);
+	package Motion_Listener_List is
+		new X11.Collections.List(Motion_Listener_Type);
 	package Key_Listener_List is
 		new X11.Collections.List(Key_Listener_Type);
 	package Panel_List is
@@ -99,6 +111,7 @@ private
 		background       : Color_Type;
 		painters         : Painter_List.List_Type;
 		button_listeners : Button_Listener_List.List_Type;
+		motion_listeners : Motion_Listener_List.List_Type;
 		key_listeners    : Key_Listener_List.List_Type;
 		adder            : Adder_Type := null;
 		placer           : Placer_Type := null;

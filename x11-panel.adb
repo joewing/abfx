@@ -13,9 +13,12 @@ package body X11.Panel is
 
 	use Painter_List;
 	use Button_Listener_List;
+	use Motion_Listener_List;
 	use Key_Listener_List;
 
 	procedure Handle_Button(panel : in out Panel_Type'class;
+		event : in Types.XEvent_Pointer);
+	procedure Handle_Motion(panel : in out Panel_Type'class;
 		event : in Types.XEvent_Pointer);
 	procedure Handle_Key(panel : in out Panel_Type'class;
 		event : in Types.XEvent_Pointer);
@@ -47,7 +50,8 @@ package body X11.Panel is
 			+ Constants.KeyPressMask
 			+ Constants.KeyReleaseMask
 			+ Constants.ButtonPressMask
-			+ Constants.ButtonReleaseMask);
+			+ Constants.ButtonReleaseMask
+			+ Constants.PointerMotionMask);
 
 		panel.initialized := true;
 
@@ -114,6 +118,12 @@ package body X11.Panel is
 	begin
 		Add(panel.button_listeners, listener);
 	end Add_Button_Listener;
+
+	procedure Add_Motion_Listener(panel : in out Panel_Type'class;
+		listener : in Motion_Listener_Type) is
+	begin
+		Add(panel.motion_listeners, listener);
+	end Add_Motion_Listener;
 
 	procedure Add_Key_Listener(
 		panel    : in out Panel_Type'class;
@@ -194,6 +204,8 @@ package body X11.Panel is
 				Handle_Key(Panel_Type(panel), event);
 			when Constants.ButtonPress | Constants.ButtonRelease =>
 				Handle_Button(Panel_Type(panel), event);
+			when Constants.MotionNotify =>
+				Handle_Motion(Panel_Type(panel), event);
 			when Constants.Expose =>
 				Handle_Expose(Panel_Type(panel), event);
 			when Constants.ConfigureNotify =>
@@ -231,6 +243,32 @@ package body X11.Panel is
 		end loop;
 
 	end Handle_Button;
+
+	procedure Handle_Motion(panel : in out Panel_Type'class;
+		event : in Types.XEvent_Pointer) is
+
+		size     : Natural;
+		listener : Motion_Listener_Type;
+		mask     : Natural := 0;
+
+	begin
+
+		if event.t /= Constants.MotionNotify then
+			Put_Line("bad event in X11.Panel.Handle_Motion");
+			return;
+		end if;
+
+		-- Make sense of event.xmotion.state.
+		mask := Natural(event.xmotion.state / 2 ** 8);
+
+		size := Get_Size(panel.motion_listeners);
+		for x in 1 .. size loop
+			listener := Get(panel.motion_listeners, x);
+			listener(panel, Integer(event.xmotion.x), Integer(event.xmotion.y),
+				mask);
+		end loop;
+
+	end Handle_Motion;
 
 	procedure Handle_Key(
 		panel : in out Panel_Type'class;
