@@ -47,6 +47,8 @@ package X11.Panel is
 	procedure Set_Background(panel : in out Panel_Type'class;
 		color : in Color_Type);
 
+	function Get_Graphics(panel : Panel_Type'class) return Graphics_Type;
+
 	procedure Add(panel, child : in out Panel_Type'class;
 		location : in Positive := Border_Center);
 

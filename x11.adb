@@ -63,6 +63,7 @@ package body X11 is
 	procedure Initialize(obj : in out Object_Type) is
 		np : Listener_Node_Pointer;
 	begin
+
 		if count = 0 then
 			Open;
 		end if;
@@ -78,6 +79,7 @@ package body X11 is
 	procedure Finalize(obj : in out Object_Type) is
 		np, last : Listener_Node_Pointer;
 	begin
+
 		if obj.id /= 0 then
 			count := count - 1;
 			if count = 0 then
@@ -122,11 +124,12 @@ package body X11 is
 		should_stop := false;
 		while not should_stop loop
 
-			rcode := poll(pollfd, 1, int(min_timeout));
-
-			if XPending(display) = 0 then
-				Run_Timers;
-			end if;
+			while XPending(display) = 0 loop
+				rcode := poll(pollfd, 1, int(min_timeout));
+				if rcode = 0 then
+					Run_Timers;
+				end if;
+			end loop;
 
 			while XPending(display) > 0 loop
 				Run_Timers;
@@ -257,10 +260,12 @@ package body X11 is
 
 	procedure Open is
 	begin
+
 		display := XOpenDisplay(Null_Ptr);
 		if display = null then
 			raise Connection_Refused;
 		end if;
+
 		screen := display.default_screen;
 		root := XDefaultRootWindow(display);
 		colormap := XDefaultColormap(display, screen);
@@ -272,10 +277,12 @@ package body X11 is
 
 	procedure Close is
 	begin
+
 		if display /= null then
 			XCloseDisplay(display);
 			display := null;
 		end if;
+
 	end Close;
 
 	function Intern_Atom(name : String) return Atom_Type is

@@ -87,6 +87,11 @@ package body X11.Panel is
 		Run_Painters(panel);
 	end Set_Background;
 
+	function Get_Graphics(panel : Panel_Type'class) return Graphics_Type is
+	begin
+		return panel.graphics;
+	end Get_Graphics;
+
 	procedure Add(panel, child : in out Panel_Type'class;
 		location : in Positive := Border_Center) is
 	begin

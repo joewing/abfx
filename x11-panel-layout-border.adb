@@ -12,6 +12,9 @@ package body X11.Panel.Layout.Border is
 	procedure Manage(panel : in out Panel_Type'class) is
 	begin
 		Clear(panel.children);
+		for x in 1 .. 5 loop
+			Set(panel.children, null, x);
+		end loop;
 		panel.adder := Add'access;
 		panel.placer := Place'access;
 		panel.replacer := Replace'access;
