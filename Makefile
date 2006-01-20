@@ -1,22 +1,9 @@
 
-ADAC = gnatgcc
-ADABIND = gnatbind
-ADALINK = gnatlink
-
-ADACFLAGS = -O2 -gnatp -gnatf -Iinclude
-ADABFLAGS =
-ADALFLAGS = -largs -L/usr/X11R6/lib -lX11
-
-MAKE = make
-
-.SUFFIXES: .adb .ads .ali .o
+PROJECTS = tabfx calc
 
 all:
-	mkdir -p objects
-	for x in tabfx/*.adb ; do \
-		$(ADAC) $(ADACFLAGS) -c $$x -o objects/$$(basename $$x .adb).o ; \
-	done
+	for x in $(PROJECTS) ; do (cd $$x && make) ; done;
 
 clean:
-	rm -fr objects
+	for x in $(PROJECTS) ; do (cd $$x && make clean) ; done;
 
