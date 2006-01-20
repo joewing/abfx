@@ -5,20 +5,12 @@ with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 with Ada.Strings; use Ada.Strings;
 
 with X11; use X11;
-
-with X11.Panel; use X11.Panel;
-with X11.Window; use X11.Window;
 with X11.Label; use X11.Label;
+with X11.Window; use X11.Window;
 with X11.Button; use X11.Button;
 with X11.Text_Box; use X11.Text_Box;
-with X11.Font; use X11.Font;
-with X11.Graphics; use X11.Graphics;
-
-with X11.Scroll_Bar; use X11.Scroll_Bar;
-
-with X11.Panel.Layout.Border;
+with X11.Panel; use X11.Panel;
 with X11.Panel.Layout.Horizontal;
-with X11.Panel.Layout.Single;
 with X11.Panel.Layout.Vertical;
 
 package body Calc is
@@ -51,9 +43,6 @@ package body Calc is
 	value        : Value_Type := 0.0;
 	last_op      : Character := ' ';
 	should_clear : Boolean := true;
-
-
-	sb : Scroll_Bar_Type;
 
 
 	function Contains(str : String; ch : Character) return Boolean is
@@ -183,9 +172,6 @@ package body Calc is
 		Set_Text(ac_button, "AC");
 		Add_Click_Listener(ac_button, All_Clear_Listener'access);
 		Add(top_row, ac_button);
-
-		Set_Orientation(sb, Horizontal);
-		Add(win, sb);
 
 		-- Set up the function buttons
 		for x in 1 .. 4 loop
