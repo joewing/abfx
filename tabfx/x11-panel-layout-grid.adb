@@ -141,9 +141,10 @@ package body X11.Panel.Layout.Grid is
 		panel   : in out Panel_Type'class;
 		size    : in Size_Type) is
 
-		count   : Natural := Get_Size(panel.children);
-		dim     : Size_Type;
-		max     : Size_Type;
+		count     : Natural := Get_Size(panel.children);
+		dim       : Size_Type;
+		max       : Size_Type;
+		remainder : Size_Type;
 
 	begin
 
@@ -155,31 +156,53 @@ package body X11.Panel.Layout.Grid is
 
 		max.width := size.width / dim.width;
 		max.height := size.height / dim.height;
+		remainder.width := size.width mod dim.width;
+		remainder.height := size.height mod dim.height;
 
-		-- Resize subpanels.
 		for x in 1 .. count loop
 			Resize(Get(panel.children, x).all, max);
 		end loop;
 
-		-- Move subpanels.
 		declare
 			item    : Natural;
 			offsetx : Natural;
 			offsety : Natural;
+			rx, ry  : Natural;
+			child   : Panel_Pointer;
+			size    : Size_Type;
 		begin
+
 			item := 1;
 			offsety := 0;
+			ry := remainder.height;
 			for y in 1 .. dim.height loop
+
 				offsetx := 0;
+				rx := remainder.width;
+				size.height := max.height;
+				if ry > 0 then
+					ry := ry - 1;
+					size.height := size.height + 1;
+				end if;
+
 				for x in 1 .. dim.width loop
+					size.width := max.width;
+					if rx > 0 then
+						rx := rx - 1;
+						size.width := size.width + 1;
+					end if;
 					if item <= count then
-						Move(Get(panel.children, item).all, (offsetx, offsety));
+						child := Get(panel.children, item);
+						Move(child.all, (offsetx, offsety));
+						Resize(child.all, size);
 						item := item + 1;
 					end if;
-					offsetx := offsetx + max.width;
+					offsetx := offsetx + size.width;
 				end loop;
-				offsety := offsety + max.height;
+				offsety := offsety + size.height;
+
 			end loop;
+
 		end;
 		
 	end Replace;

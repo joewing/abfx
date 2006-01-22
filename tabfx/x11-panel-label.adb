@@ -131,9 +131,9 @@ package body X11.Panel.Label is
 
 	procedure Compute_Size(label : in out Label_Type'class) is
 	begin
-		label.preferred_size.height := Get_Height(label.font);
+		label.preferred_size.height := Get_Height(label.font) + 5;
 		label.preferred_size.width
-			:= Get_Width(label.font, To_String(label.text));
+			:= Get_Width(label.font, To_String(label.text)) + 5;
 		case label.border is
 			when No_Border =>
 				null;
