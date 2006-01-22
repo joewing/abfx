@@ -44,6 +44,7 @@ package X11 is
 	type Object_Type is new Limited_Controlled with private;
 
 	display  : Bindings.X11.Types.Display_Pointer := null;
+	visual   : Bindings.X11.Types.Visual_Pointer := null;
 	screen   : Interfaces.C.int := 0;
 	colormap : Bindings.X11.Types.Colormap_Type := Bindings.X11.Constants.None;
 	root     : Bindings.X11.Types.Window_Type := Bindings.X11.Constants.None;

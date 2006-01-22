@@ -1,8 +1,13 @@
 
+with Ada.Text_IO; use Ada.Text_IO;
+
 with Interfaces.C; use Interfaces.C;
 with Interfaces.C.Strings; use Interfaces.C.Strings;
 
 with Bindings.X11.Functions; use Bindings.X11.Functions;
+with Bindings.XFT.Functions; use Bindings.XFT.Functions;
+with Bindings.XFT.Types; use Bindings.XFT.Types;
+with Bindings.XRender.Types; use Bindings.XRender.Types;
 
 package body X11.Graphics is
 
@@ -28,32 +33,57 @@ package body X11.Graphics is
 		return g.drawable;
 	end Get_Drawable;
 
-	procedure Set_Foreground(g : in Graphics_Type; c : in Color_Type) is
+	procedure Set_Foreground(g : in out Graphics_Type; c : in Color_Type) is
 		rcode : int;
 	begin
 		rcode := XSetForeground(display, g.gc, c.pixel);
+		g.color := c;
 	end Set_Foreground;
 
-	procedure Set_Background(g : in Graphics_Type; c : in Color_Type) is
+	procedure Set_Background(g : in out Graphics_Type; c : in Color_Type) is
 		rcode : int;
 	begin
 		rcode := XSetBackground(display, g.gc, c.pixel);
 	end Set_Background;
 
-	procedure Set_Font(g : in Graphics_Type; f : in Font_Type) is
+	procedure Set_Font(g : in out Graphics_Type; f : in Font_Type) is
 	begin
-		XSetFont(display, g.gc, Get_Id(f));
+		g.font := f;
 	end Set_Font;
 
-	procedure Print(g : in Graphics_Type; x, y : in Integer;
-		str : in String) is
-		rcode : int;
-		c_str : chars_ptr;
+	procedure Print(
+		g    : in Graphics_Type;
+		x, y : in Integer;
+		str  : in String) is
+
+		xd     : XftDraw_Pointer;
+		c_str  : chars_ptr;
+		rcolor : aliased XRenderColor_Type;
+		color  : aliased XftColor_Type;
+		rcode  : int;
+
 	begin
+
+		xd := XftDrawCreate(display, g.drawable, visual, colormap);
 		c_str := New_String(str);
-		rcode := XDrawString(display, g.drawable, g.gc,
+
+		rcolor.red   := g.color.red;
+		rcolor.green := g.color.green;
+		rcolor.blue  := g.color.blue;
+		rcolor.alpha := 16#FFFF#;
+
+		rcode := XftColorAllocValue(display, visual, colormap,
+			rcolor'unrestricted_access,
+			color'unrestricted_access);
+
+		XftDrawString8(xd, color'unrestricted_access, Get_Font_Data(g.font),
 			int(x), int(y), c_str, int(str'length));
+
+		XftColorFree(display, visual, colormap, color'unrestricted_access);
+
 		Free(c_str);
+		XftDrawDestroy(xd);
+
 	end Print;
 
 	procedure Draw_Line(g : in Graphics_Type; x1, y1, x2, y2 : in Integer) is
@@ -69,7 +99,7 @@ package body X11.Graphics is
 			int(x), int(y), int(width), int(height));
 	end Draw_Rectangle;
 
-	procedure Draw_Border(g             : in Graphics_Type;
+	procedure Draw_Border(g             : in out Graphics_Type;
 	                      x, y          : in Integer;
 	                      width, height : in Natural;
 	                      border        : in Border_Type := Up_Border;

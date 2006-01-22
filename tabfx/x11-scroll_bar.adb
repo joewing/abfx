@@ -20,7 +20,7 @@ package body X11.Scroll_Bar is
 
 	procedure Paint(obj : in out Panel_Type'class);
 	procedure Paint_Bar(bar : in out Scroll_Bar_Type);
-	procedure Draw_Indicator(gc : in Graphics_Type;
+	procedure Draw_Indicator(gc : in out Graphics_Type;
 		x, y, width, height : in Integer);
 
 	procedure Increase_Listener(button : in out Button_Type'class);
@@ -198,7 +198,7 @@ package body X11.Scroll_Bar is
 
 	end Paint_Bar;
 
-	procedure Draw_Indicator(gc : in Graphics_Type;
+	procedure Draw_Indicator(gc : in out Graphics_Type;
 									 x, y, width, height : in Integer) is
 	begin
 		if width > 1 and then height > 1 then

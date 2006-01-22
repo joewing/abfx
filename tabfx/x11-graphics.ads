@@ -24,10 +24,10 @@ package X11.Graphics is
 
 	function Get_Drawable(g : Graphics_Type) return Types.Drawable_Type;
 
-	procedure Set_Foreground(g : in Graphics_Type; c : in Color_Type);
-	procedure Set_Background(g : in Graphics_Type; c : in Color_Type);
+	procedure Set_Foreground(g : in out Graphics_Type; c : in Color_Type);
+	procedure Set_Background(g : in out Graphics_Type; c : in Color_Type);
 
-	procedure Set_Font(g : in Graphics_Type; f : in Font_Type);
+	procedure Set_Font(g : in out Graphics_Type; f : in Font_Type);
 
 	procedure Print(g : in Graphics_Type; x, y : in Integer;
 		str : in String);
@@ -37,7 +37,7 @@ package X11.Graphics is
 	procedure Draw_Rectangle(g : in Graphics_Type;
 		x, y : in Integer; width, height : in Natural);
 
-	procedure Draw_Border(g             : in Graphics_Type;
+	procedure Draw_Border(g             : in out Graphics_Type;
 	                      x, y          : in Integer;
 	                      width, height : in Natural;
 	                      border        : in Border_Type := Up_Border;
@@ -48,6 +48,8 @@ private
 	type Graphics_Type is record
 		drawable : Types.Drawable_Type := Constants.None;
 		gc       : Types.GC_Type := Constants.None;
+		font     : Font_Type;
+		color    : Color_Type;
 	end record;
 
 end X11.Graphics;

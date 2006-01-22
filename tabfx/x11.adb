@@ -261,12 +261,17 @@ package body X11 is
 	procedure Open is
 	begin
 
+		if display /= null then
+			return;
+		end if;
+
 		display := XOpenDisplay(Null_Ptr);
 		if display = null then
 			raise Connection_Refused;
 		end if;
 
 		screen := display.default_screen;
+		visual := display.screens(screen).root_visual;
 		root := XDefaultRootWindow(display);
 		colormap := XDefaultColormap(display, screen);
 
