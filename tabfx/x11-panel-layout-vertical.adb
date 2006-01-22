@@ -1,11 +1,13 @@
 
 with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Unchecked_Deallocation;
 
 package body X11.Panel.Layout.Vertical is
 
 	use Panel_List;
 
 	type Vertical_Manager_Type is new Manager_Type with null record;
+	type Vertical_Manager_Pointer is access all Vertical_Manager_Type;
 
 	procedure Add(
 		manager  : in out Vertical_Manager_Type;
@@ -27,10 +29,23 @@ package body X11.Panel.Layout.Vertical is
 		panel   : in out Panel_Type'class;
 		child   : in out Panel_Type'class);
 
+	procedure Release(
+		manager : in Vertical_Manager_Type;
+		panel   : in out Panel_Type'class);
+
+	procedure Free is new Ada.Unchecked_Deallocation(
+		Vertical_Manager_Type, Vertical_Manager_Pointer);
+
 	procedure Manage(panel : in out Panel_Type'class) is
 	begin
+
+		if panel.manager /= null then
+			Release(panel.manager.all, panel);
+		end if;
+
 		Clear(panel.children);
 		panel.manager := new Vertical_Manager_Type;
+
 	end Manage;
 
 	procedure Add(
@@ -139,6 +154,14 @@ package body X11.Panel.Layout.Vertical is
 			end if;
 		end loop;
 	end Remove;
+
+	procedure Release(
+		manager : in Vertical_Manager_Type;
+		panel   : in out Panel_Type'class) is
+	begin
+		Free(Vertical_Manager_Pointer(panel.manager));
+		panel.manager := null;
+	end Release;
 
 end X11.Panel.Layout.Vertical;
 

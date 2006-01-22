@@ -1,6 +1,5 @@
 
-with Ada.Numerics.Elementary_Functions;
-use Ada.Numerics.Elementary_Functions;
+with Ada.Unchecked_Deallocation;
 
 package body X11.Panel.Layout.Grid is
 
@@ -11,7 +10,7 @@ package body X11.Panel.Layout.Grid is
 		height : Natural;
 	end record;
 
-	type Grid_Manager_Pointer is access Grid_Manager_Type;
+	type Grid_Manager_Pointer is access all Grid_Manager_Type;
 
 	procedure Add(
 		manager  : in out Grid_Manager_Type;
@@ -33,6 +32,13 @@ package body X11.Panel.Layout.Grid is
 		panel   : in out Panel_Type'class;
 		child   : in out Panel_Type'class);
 
+	procedure Release(
+		manager : in Grid_Manager_Type;
+		panel   : in out Panel_Type'class);
+
+	procedure Free is new Ada.Unchecked_Deallocation(
+		Grid_Manager_Type, Grid_Manager_Pointer);
+
 	function Get_Dimensions(
 		manager : Grid_Manager_Type'class;
 		count   : Natural) return Size_Type;
@@ -45,6 +51,10 @@ package body X11.Panel.Layout.Grid is
 		mp : Grid_Manager_Pointer := new Grid_Manager_Type;
 
 	begin
+
+		if panel.manager /= null then
+			Release(panel.manager.all, panel);
+		end if;
 
 		Clear(panel.children);
 		mp.width := width;
@@ -185,6 +195,14 @@ package body X11.Panel.Layout.Grid is
 			end if;
 		end loop;
 	end Remove;
+
+	procedure Release(
+		manager : in Grid_Manager_Type;
+		panel   : in out Panel_Type'class) is
+	begin
+		Free(Grid_Manager_Pointer(panel.manager));
+		panel.manager := null;
+	end Release;
 
 	function Get_Dimensions(
 		manager : Grid_Manager_Type'class;

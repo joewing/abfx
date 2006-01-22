@@ -1,9 +1,12 @@
 
+with Ada.Unchecked_Deallocation;
+
 package body X11.Panel.Layout.Border is
 
 	use Panel_List;
 
 	type Border_Manager_Type is new Manager_Type with null record;
+	type Border_Manager_Pointer is access all Border_Manager_Type;
 
 	procedure Add(
 		manager  : in out Border_Manager_Type;
@@ -25,13 +28,26 @@ package body X11.Panel.Layout.Border is
 		panel   : in out Panel_Type'class;
 		child   : in out Panel_Type'class);
 
+	procedure Release(
+		manager : in Border_Manager_Type;
+		panel   : in out Panel_Type'class);
+
+	procedure Free is new Ada.Unchecked_Deallocation(
+		Border_Manager_Type, Border_Manager_Pointer);
+
 	procedure Manage(panel : in out Panel_Type'class) is
 	begin
+
+		if panel.manager /= null then
+			Release(panel.manager.all, panel);
+		end if;
+
 		Clear(panel.children);
 		for x in 1 .. 5 loop
 			Set(panel.children, null, x);
 		end loop;
 		panel.manager := new Border_Manager_Type;
+
 	end Manage;
 
 	procedure Add(
@@ -284,6 +300,14 @@ package body X11.Panel.Layout.Border is
 			end if;
 		end loop;
 	end Remove;
+
+	procedure Release(
+		manager : in Border_Manager_Type;
+		panel   : in out Panel_Type'class) is
+	begin
+		Free(Border_Manager_Pointer(panel.manager));
+		panel.manager := null;
+	end Release;
 
 end X11.Panel.Layout.Border;
 

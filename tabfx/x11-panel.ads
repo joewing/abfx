@@ -116,6 +116,10 @@ private
 		panel   : in out Panel_Type'class;
 		child   : in out Panel_Type'class) is abstract;
 
+	procedure Release(
+		manager : in Manager_Type;
+		panel   : in out Panel_Type'class) is abstract;
+
 	type Panel_List_Pointer is access Panel_List.List_Type;
 
 	type Panel_Type is new Object_Type with record

@@ -63,6 +63,10 @@ package body X11.Panel is
 	begin
 		if panel.initialized then
 
+			if panel.manager /= null then
+				Release(panel.manager.all, panel);
+			end if;
+
 			size := Panel_List.Get_Size(panel.children);
 			for x in 1 .. size loop
 				np := Panel_List.Get(panel.children, x);
