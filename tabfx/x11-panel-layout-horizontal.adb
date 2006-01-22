@@ -5,31 +5,51 @@ package body X11.Panel.Layout.Horizontal is
 
 	use Panel_List;
 
-	procedure Add(panel, child : in out Panel_Type'class;
+	type Horizontal_Manager_Type is new Manager_Type with null record;
+
+	procedure Add(
+		manager  : in out Horizontal_Manager_Type;
+		panel    : in out Panel_Type'class;
+		child    : in out Panel_Type'class;
 		location : in Positive);
-	procedure Place(panel : in out Panel_Type'class);
-	procedure Replace(panel : in out Panel_Type'class; size : in Size_Type);
-	procedure Remove(panel, child : in out Panel_Type'class);
+
+	procedure Place(
+		manager : in out Horizontal_Manager_Type;
+		panel   : in out Panel_Type'class);
+
+	procedure Replace(
+		manager : in out Horizontal_Manager_type;
+		panel   : in out Panel_Type'class;
+		size    : in Size_Type);
+
+	procedure Remove(
+		manager : in out Horizontal_Manager_Type;
+		panel   : in out Panel_Type'class;
+		child   : in out Panel_Type'class);
 
 	procedure Manage(panel : in out Panel_Type'class) is
 	begin
 		Clear(panel.children);
-		panel.adder := Add'access;
-		panel.placer := Place'access;
-		panel.replacer := Replace'access;
-		panel.remover := Remove'access;
+		panel.manager := new Horizontal_Manager_Type;
 	end Manage;
 
-	procedure Add(panel, child : in out Panel_Type'class;
+	procedure Add(
+		manager  : in out Horizontal_Manager_Type;
+		panel    : in out Panel_Type'class;
+		child    : in out Panel_Type'class;
 		location : in Positive) is
 	begin
 		Add(panel.children, child'unrestricted_access);
 	end Add;
 
-	procedure Place(panel : in out Panel_Type'class) is
+	procedure Place(
+		manager : in out Horizontal_Manager_Type;
+		panel   : in out Panel_Type'class) is
+
 		sizes  : array(1 .. Get_Size(panel.children)) of Size_Type;
 		offset : Natural;
 		child  : Panel_Pointer;
+
 	begin
 
 		for x in sizes'range loop
@@ -64,12 +84,17 @@ package body X11.Panel.Layout.Horizontal is
 
 	end Place;
 
-	procedure Replace(panel : in out Panel_Type'class; size : in Size_Type) is
+	procedure Replace(
+		manager : in out Horizontal_Manager_type;
+		panel   : in out Panel_Type'class;
+		size    : in Size_Type) is
+
 		sizes  : array(1 .. Get_Size(panel.children)) of Size_Type;
 		total  : Natural;
 		ratio  : Float;
 		offset : Natural;
 		child  : Panel_Pointer;
+
 	begin
 
 		total := 0;
@@ -93,8 +118,8 @@ package body X11.Panel.Layout.Horizontal is
 
 			Resize(child.all, sizes(x));
 			Move(child.all, (offset, 0));
-			if child.replacer /= null then
-				child.replacer(child.all, sizes(x));
+			if child.manager /= null then
+				Replace(child.manager.all, child.all, sizes(x));
 			end if;
 
 			offset := offset + sizes(x).width;
@@ -103,7 +128,10 @@ package body X11.Panel.Layout.Horizontal is
 
 	end Replace;
 
-	procedure Remove(panel, child : in out Panel_Type'class) is
+	procedure Remove(
+		manager : in out Horizontal_Manager_Type;
+		panel   : in out Panel_Type'class;
+		child   : in out Panel_Type'class) is
 	begin
 		for x in 1 .. Get_Size(panel.children) loop
 			if Get(panel.children, x) = child'unrestricted_access then

@@ -95,8 +95,8 @@ package body X11.Panel is
 	procedure Add(panel, child : in out Panel_Type'class;
 		location : in Positive := Border_Center) is
 	begin
-		if panel.adder /= null then
-			panel.adder(panel, child, location);
+		if panel.manager /= null then
+			Add(panel.manager.all, panel, child, location);
 			XReparentWindow(display, child.id, panel.id, 0, 0);
 		end if;
 		child.parent := panel'unrestricted_access;
@@ -104,8 +104,8 @@ package body X11.Panel is
 
 	procedure Remove(panel, child : in out Panel_Type'class) is
 	begin
-		if panel.remover /= null then
-			panel.remover(panel, child);
+		if panel.manager /= null then
+			Remove(panel.manager.all, panel, child);
 		end if;
 		Hide(child);
 		XReparentWindow(display, child.id, root, 0, 0);
@@ -139,8 +139,8 @@ package body X11.Panel is
 
 	procedure Show(panel : in out Panel_Type'class) is
 	begin
-		if panel.placer /= null then
-			panel.placer(panel);
+		if panel.manager /= null then
+			Place(panel.manager.all, panel);
 		else
 			panel.size := panel.preferred_size;
 		end if;
@@ -343,10 +343,10 @@ package body X11.Panel is
 		event : in Types.XEvent_Pointer) is
 		nsize : Size_Type;
 	begin
-		if panel.replacer /= null then
+		if panel.manager /= null then
 			nsize.width := Natural(event.xconfigure.width);
 			nsize.height := Natural(event.xconfigure.height);
-			panel.replacer(panel, nsize);
+			Replace(panel.manager.all, panel, nsize);
 		end if;
 	end Handle_Configure;
 

@@ -3,11 +3,27 @@ package body X11.Panel.Layout.Border is
 
 	use Panel_List;
 
-	procedure Add(panel, child : in out Panel_Type'class;
+	type Border_Manager_Type is new Manager_Type with null record;
+
+	procedure Add(
+		manager  : in out Border_Manager_Type;
+		panel    : in out Panel_Type'class;
+		child    : in out Panel_Type'class;
 		location : in Positive);
-	procedure Place(panel : in out Panel_Type'class);
-	procedure Replace(panel : in out Panel_Type'class; size : in Size_Type);
-	procedure Remove(panel, child : in out Panel_Type'class);
+
+	procedure Place(
+		manager : in out Border_Manager_Type;
+		panel   : in out Panel_Type'class);
+
+	procedure Replace(
+		manager : in out Border_Manager_Type;
+		panel   : in out Panel_Type'class;
+		size    : in Size_Type);
+
+	procedure Remove(
+		manager : in out Border_Manager_Type;
+		panel   : in out Panel_Type'class;
+		child   : in out Panel_Type'class);
 
 	procedure Manage(panel : in out Panel_Type'class) is
 	begin
@@ -15,21 +31,25 @@ package body X11.Panel.Layout.Border is
 		for x in 1 .. 5 loop
 			Set(panel.children, null, x);
 		end loop;
-		panel.adder := Add'access;
-		panel.placer := Place'access;
-		panel.replacer := Replace'access;
-		panel.remover := Remove'access;
+		panel.manager := new Border_Manager_Type;
 	end Manage;
 
-	procedure Add(panel, child : in out Panel_Type'class;
+	procedure Add(
+		manager  : in out Border_Manager_Type;
+		panel    : in out Panel_Type'class;
+		child    : in out Panel_Type'class;
 		location : in Positive) is
 	begin
 		Set(panel.children, child'unrestricted_access, location);
 	end Add;
 
-	procedure Place(panel : in out Panel_Type'class) is
+	procedure Place(
+		manager : in out Border_Manager_Type;
+		panel   : in out Panel_Type'class) is
+
 		sizes : array(1 .. 5) of Size_Type;
 		tpos  : Position_Type;
+
 	begin
 
 		for x in sizes'range loop
@@ -153,9 +173,14 @@ package body X11.Panel.Layout.Border is
 
 	end Place;
 
-	procedure Replace(panel : in out Panel_Type'class; size : in Size_Type) is
+	procedure Replace(
+		manager : in out Border_Manager_Type;
+		panel   : in out Panel_Type'class;
+		size    : in Size_Type) is
+
 		sizes : array(1 .. 5) of Size_Type;
 		tpos  : Position_Type;
+
 	begin
 	
 		for x in sizes'range loop
@@ -244,8 +269,13 @@ package body X11.Panel.Layout.Border is
 		panel.size := size;
 	end Replace;
 
-	procedure Remove(panel, child : in out Panel_Type'class) is
+	procedure Remove(
+		manager : in out Border_Manager_Type;
+		panel   : in out Panel_Type'class;
+		child   : in out Panel_Type'class) is
+
 		np   : Panel_Pointer;
+
 	begin
 		for x in 1 .. 5 loop
 			np := Get(panel.children, x);

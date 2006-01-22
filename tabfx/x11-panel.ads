@@ -93,16 +93,30 @@ private
 	package Panel_List is
 		new X11.Collections.List(Panel_Pointer);
 
-	type Panel_List_Pointer is access Panel_List.List_Type;
+	type Manager_Type is abstract tagged limited null record;
+	type Manager_Pointer is access all Manager_Type'class;
 
-	type Adder_Type is access
-		procedure(panel, child : in out Panel_Type'class;
-			location : in Positive);
-	type Placer_Type is access procedure(panel : in out Panel_Type'class);
-	type Replacer_Type is access procedure(panel : in out Panel_Type'class;
-		size : in Size_Type);
-	type Remover_Type is access
-		procedure(panel, child : in out Panel_Type'class);
+	procedure Add(
+		manager  : in out Manager_Type;
+		panel    : in out Panel_Type'class;
+		child    : in out Panel_Type'class;
+		location : in Positive) is abstract;
+
+	procedure Place(
+		manager : in out Manager_Type;
+		panel   : in out Panel_Type'class) is abstract;
+
+	procedure Replace(
+		manager : in out Manager_Type;
+		panel   : in out Panel_Type'class;
+		size    : in Size_Type) is abstract;
+
+	procedure Remove(
+		manager : in out Manager_Type;
+		panel   : in out Panel_Type'class;
+		child   : in out Panel_Type'class) is abstract;
+
+	type Panel_List_Pointer is access Panel_List.List_Type;
 
 	type Panel_Type is new Object_Type with record
 		initialized      : Boolean := false;
@@ -115,12 +129,9 @@ private
 		button_listeners : Button_Listener_List.List_Type;
 		motion_listeners : Motion_Listener_List.List_Type;
 		key_listeners    : Key_Listener_List.List_Type;
-		adder            : Adder_Type := null;
-		placer           : Placer_Type := null;
-		replacer         : Replacer_Type := null;
-		remover          : Remover_Type := null;
 		children         : Panel_List.List_Type;
 		parent           : Panel_Pointer := null;
+		manager          : Manager_Pointer := null;
 	end record;
 
 	procedure Move(

@@ -8,6 +8,7 @@ with X11.Label;
 with X11.Panel.Label.Text_Box;
 with X11.Panel.Label;
 with X11.Panel.Layout.Border;
+with X11.Panel.Layout.Grid;
 with X11.Panel.Layout.Horizontal;
 with X11.Panel.Layout.Single;
 with X11.Panel.Layout.Vertical;

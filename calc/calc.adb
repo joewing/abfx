@@ -12,6 +12,7 @@ with X11.Text_Box; use X11.Text_Box;
 with X11.Panel; use X11.Panel;
 with X11.Panel.Layout.Horizontal;
 with X11.Panel.Layout.Vertical;
+with X11.Panel.Layout.Grid;
 
 package body Calc is
 
@@ -34,11 +35,11 @@ package body Calc is
 	win         : Window_Type;
 	output      : Text_Box_Type;
 	top_row     : Panel_Type;
+	button_row  : Panel_Type;
 	quit_button : Button_Type;
 	ce_button   : Button_Type;
 	ac_button   : Button_Type;
 	buttons     : array(1 .. 4, 1 .. 4) of Button_Type;
-	rows        : array(1 .. 4) of Panel_Type;
 
 	value        : Value_Type := 0.0;
 	last_op      : Character := ' ';
@@ -174,14 +175,14 @@ package body Calc is
 		Add(top_row, ac_button);
 
 		-- Set up the function buttons
+		X11.Panel.Layout.Grid.Manage(button_row);
+		Add(win, button_row);
 		for x in 1 .. 4 loop
-			X11.Panel.Layout.Horizontal.Manage(rows(x));
 			for y in 1 .. 4 loop
-				Add(rows(x), buttons(x, y));
+				Add(button_row, buttons(x, y));
 				Add_Click_Listener(buttons(x, y), Function_Listener'access);
 				Set_Text(buttons(x, y), labels(x, y));
 			end loop;
-			Add(win, rows(x));
 		end loop;
 
 		Show(win);
