@@ -15,7 +15,7 @@ with X11.Panel.Layout.Vertical;
 with X11.Panel.Layout.Grid;
 
 with X11.Panel.Menu_Bar; use X11.Panel.Menu_Bar;
-with X11.Panel.Menu; use X11.Panel.Menu;
+with X11.Panel.Label.Menu; use X11.Panel.Label.Menu;
 
 package body Calc is
 
@@ -46,6 +46,7 @@ package body Calc is
 
 	bar  : Menu_Bar_Type;
 	menu : Menu_Type;
+	bah  : Label_Type;
 
 	value        : Value_Type := 0.0;
 	last_op      : Character := ' ';
@@ -161,7 +162,9 @@ package body Calc is
 		-- Add the menu bar.
 		Add(win, bar);
 		Add(bar, menu);
-		Set_Title(menu, "File");
+		Set_Text(menu, "File");
+		Add(menu, bah);
+		Set_Text(bah, "bah");
 
 		-- Set up the output display
 		Set_Text(output, "0");

@@ -1,14 +1,9 @@
 
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
-with X11.Panel.Label; use X11.Panel.Label;
 
-package X11.Panel.Menu is
+package X11.Panel.Label.Menu is
 
-	type Menu_Type is new Panel_Type with private;
-
-	procedure Set_Title(
-		menu  : in out Menu_Type'class;
-		title : in String);
+	type Menu_Type is new Label_Type with private;
 
 	procedure Add(
 		menu     : in out Menu_Type;
@@ -25,8 +20,7 @@ package X11.Panel.Menu is
 
 private
 
-	type Menu_Type is new Panel_Type with record
-		label : Label_Type;
+	type Menu_Type is new Label_Type with record
 		menu  : Panel_Type;
 	end record;
 
@@ -34,6 +28,6 @@ private
 
 	procedure Finalize(menu : in out Menu_Type);
 
-end X11.Panel.Menu;
+end X11.Panel.Label.Menu;
 
 

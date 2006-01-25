@@ -16,7 +16,7 @@ with X11.Panel.Label;
 with X11.Panel.Label.Text_Box;
 
 with X11.Panel.Menu_Bar;
-with X11.Panel.Menu;
+with X11.Panel.Label.Menu;
 with X11.Button.Menu_Item;
 
 with X11.Panel.Layout;

@@ -1,7 +1,10 @@
 
+with Ada.Text_IO; use Ada.Text_IO;
+
+with X11.Panel.Layout.Single;
 with X11.Panel.Layout.Vertical;
 
-package body X11.Panel.Menu is
+package body X11.Panel.Label.Menu is
 
 	procedure Click_Listener(
 		panel  : in out Panel_Type'class;
@@ -17,24 +20,16 @@ package body X11.Panel.Menu is
 
 	procedure Initialize(menu : in out Menu_Type) is
 	begin
-		Initialize(Panel_Type(menu));
-		X11.Panel.Layout.Vertical.Manage(menu);
-		Add_Button_Listener(menu.label, Click_Listener'access);
+		Initialize(Label_Type(menu));
+		X11.Panel.Layout.Vertical.Manage(menu.menu);
+		Add_Button_Listener(menu, Click_Listener'access);
 		Add_Button_Listener(menu.menu, Menu_Button_Listener'access);
-		Add(Panel_Type(menu), menu.label);
 	end Initialize;
 
 	procedure Finalize(menu : in out Menu_Type) is
 	begin
-		Finalize(Panel_Type(menu));
+		Finalize(Label_Type(menu));
 	end Finalize;
-
-	procedure Set_Title(
-		menu  : in out Menu_Type'class;
-		title : in String) is
-	begin
-		Set_Text(menu.label, title);
-	end Set_Title;
 
 	procedure Add(
 		menu     : in out Menu_Type;
@@ -87,5 +82,5 @@ package body X11.Panel.Menu is
 
 	end Menu_Button_Listener;
 
-end X11.Panel.Menu;
+end X11.Panel.Label.Menu;
 
