@@ -208,6 +208,27 @@ package body X11.Panel is
 		panel.position := position;
  	end Move;
 
+	procedure Set_Override_Redirect(
+		panel : in out Panel_Type'class;
+		value : in Boolean) is
+
+		attr : aliased Bindings.X11.Types.XSetWindowAttributes_Type;
+		mask : constant := Bindings.X11.Constants.CWOverrideRedirect;
+		rc   : int;
+
+	begin
+
+		if value then
+			attr.override_redirect := 1;
+		else
+			attr.override_redirect := 0;
+		end if;
+
+		rc := XChangeWindowAttributes(display, panel.id, mask,
+			attr'unrestricted_access);
+
+	end Set_Override_Redirect;
+
 	procedure Handle_Event(
 		panel : in out Panel_Type;
 		event : in Types.XEvent_Pointer) is

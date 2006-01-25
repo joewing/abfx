@@ -42,14 +42,6 @@ package Bindings.X11.Functions is
 		property, t : Atom_Type;
 		format      : int;
 		mode        : int;
-		data        : chars_ptr;
-		nelements   : int);
-	procedure XChangeProperty(
-		display     : Display_Pointer;
-		w           : Window_Type;
-		property, t : Atom_Type;
-		format      : int;
-		mode        : int;
 		data        : Atom_Pointer;
 		nelements   : int);
 	pragma Import(C, XChangeProperty, "XChangeProperty");
@@ -203,6 +195,13 @@ package Bindings.X11.Functions is
 		keycode : KeyCode_Type;
 		index   : int) return KeySym_Type;
 	pragma Import(C, XKeycodeToKeysym, "XKeycodeToKeysym");
+
+	function XChangeWindowAttributes(
+		display : Display_Pointer;
+		window  : Window_Type;
+		mask    : unsigned_long;
+		attr    : XSetWindowAttributes_Pointer) return int;
+	pragma Import(C, XChangeWindowAttributes, "XChangeWindowAttributes");
 
 end Bindings.X11.Functions;
 

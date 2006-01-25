@@ -166,6 +166,8 @@ package Bindings.X11.Types is
 	end record;
 	pragma Convention(C, XSetWindowAttributes_Type);
 
+	type XSetWindowAttributes_Pointer is access all XSetWindowAttributes_Type;
+
 	type XWindowAttributes_Type is record
 		x, y                  : int;
 		width, height         : int;

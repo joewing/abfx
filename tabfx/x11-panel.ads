@@ -150,6 +150,10 @@ private
 		panel : in out Panel_Type'class;
 		size  : in Size_Type);
 
+	procedure Set_Override_Redirect(
+		panel : in out Panel_Type'class;
+		value : in Boolean);
+
 	procedure Initialize(panel : in out Panel_Type);
 	procedure Finalize(panel : in out Panel_Type);
 

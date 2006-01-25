@@ -24,6 +24,7 @@ package body X11.Panel.Label.Menu is
 		X11.Panel.Layout.Vertical.Manage(menu.menu);
 		Add_Button_Listener(menu, Click_Listener'access);
 		Add_Button_Listener(menu.menu, Menu_Button_Listener'access);
+		Set_Override_Redirect(menu.menu, true);
 	end Initialize;
 
 	procedure Finalize(menu : in out Menu_Type) is
