@@ -96,7 +96,9 @@ package body X11.Panel is
 		return panel.graphics;
 	end Get_Graphics;
 
-	procedure Add(panel, child : in out Panel_Type'class;
+	procedure Add(
+		panel    : in out Panel_Type;
+		child    : in out Panel_Type'class;
 		location : in Positive := Border_Center) is
 	begin
 		if panel.manager /= null then
@@ -106,7 +108,9 @@ package body X11.Panel is
 		child.parent := panel'unrestricted_access;
 	end Add;
 
-	procedure Remove(panel, child : in out Panel_Type'class) is
+	procedure Remove(
+		panel : in out Panel_Type;
+		child : in out Panel_Type'class) is
 	begin
 		if panel.manager /= null then
 			Remove(panel.manager.all, panel, child);

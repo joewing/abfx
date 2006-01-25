@@ -49,10 +49,14 @@ package X11.Panel is
 
 	function Get_Graphics(panel : Panel_Type'class) return Graphics_Type;
 
-	procedure Add(panel, child : in out Panel_Type'class;
+	procedure Add(
+		panel    : in out Panel_Type;
+		child    : in out Panel_Type'class;
 		location : in Positive := Border_Center);
 
-	procedure Remove(panel, child : in out Panel_Type'class);
+	procedure Remove(
+		panel    : in out Panel_Type;
+		child    : in out Panel_Type'class);
 
 	procedure Add_Painter(
 		panel   : in out Panel_Type'class;

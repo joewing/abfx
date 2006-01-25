@@ -14,6 +14,9 @@ with X11.Panel.Layout.Horizontal;
 with X11.Panel.Layout.Vertical;
 with X11.Panel.Layout.Grid;
 
+with X11.Panel.Menu_Bar; use X11.Panel.Menu_Bar;
+with X11.Panel.Menu; use X11.Panel.Menu;
+
 package body Calc is
 
 	type Value_Type is delta 0.000001 digits 18;
@@ -40,6 +43,9 @@ package body Calc is
 	ce_button   : Button_Type;
 	ac_button   : Button_Type;
 	buttons     : array(1 .. 4, 1 .. 4) of Button_Type;
+
+	bar  : Menu_Bar_Type;
+	menu : Menu_Type;
 
 	value        : Value_Type := 0.0;
 	last_op      : Character := ' ';
@@ -151,6 +157,11 @@ package body Calc is
 
 		X11.Panel.Layout.Vertical.Manage(win);
 		Set_Title(win, "Calc");
+
+		-- Add the menu bar.
+		Add(win, bar);
+		Add(bar, menu);
+		Set_Title(menu, "File");
 
 		-- Set up the output display
 		Set_Text(output, "0");
