@@ -1,6 +1,10 @@
 
 with Ada.Text_IO; use Ada.Text_IO;
 
+with Interfaces.C; use Interfaces.C;
+
+with Bindings.X11.Functions; use Bindings.X11.Functions;
+
 with X11.Panel.Layout.Single;
 with X11.Panel.Layout.Vertical;
 
@@ -38,6 +42,7 @@ package body X11.Panel.Label.Menu is
 		location : in Positive := Border_Center) is
 	begin
 		Add(menu.menu, child);
+		Add_Button_Listener(child, Menu_Button_Listener'access);
 	end Add;
 
 	procedure Remove(
@@ -50,9 +55,23 @@ package body X11.Panel.Label.Menu is
 	procedure Popup(
 		menu     : in out Menu_Type'class;
 		position : in Position_Type) is
+
+		parent : Panel_Pointer;
+
 	begin
-		Move(menu.menu, position);
+
+		parent := Get_Parent(menu);
+		while Get_Parent(parent.all) /= null loop
+			parent := Get_Parent(parent.all);
+		end loop;
+
+		if parent /= null then
+			XReparentWindow(display, menu.menu.id, parent.id,
+				int(position.x), int(position.y));
+		end if;
+
 		Show(menu.menu);
+
 	end Popup;
 
 	procedure Click_Listener(
@@ -75,10 +94,20 @@ package body X11.Panel.Label.Menu is
 		x, y   : in Integer;
 		button : in Positive;
 		strike : in Strike_Type) is
+
+		parent : Panel_Pointer;
+
 	begin
 
+		if Get_Parent(panel) /= null then
+			parent := Get_Parent(panel);
+			while Get_Parent(parent.all) /= null loop
+				parent := Get_Parent(parent.all);
+			end loop;
+		end if;
+
 		if strike = Release then
-			Hide(panel);
+			Hide(parent.all);
 		end if;
 
 	end Menu_Button_Listener;
