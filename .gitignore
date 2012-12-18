@@ -1,0 +1,5 @@
+*.o
+*.ali
+lib
+calc/calc
+adainclude
