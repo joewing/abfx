@@ -136,8 +136,10 @@ package Bindings.X11.Types is
 	end record;
 	pragma Convention(C, Screen_Type);
 
-	type Screen_Array is array(int'range) of Screen_Type;
-	type Screen_Pointer is access Screen_Array;
+	type Screen_Array is array(0 .. int'last) of Screen_Type;
+	pragma Convention(C, Screen_Array);
+	type Screen_Pointer is access all Screen_Array;
+	pragma Convention(C, Screen_Pointer);
 
 	type ScreenFormat_Type is record
 		ext_data        : XExtData_Pointer;
@@ -660,8 +662,9 @@ package Bindings.X11.Types is
 	type Short_Array10 is array(0 .. 9) of short;
 	type Long_Array5 is array(0 .. 4) of long;
 
-	type XClientMessageEvent_Union(format : Format_Type := Format_32) is record
-		case format is
+	type XClientMessageEvent_Union(f : Format_Type := Format_32) is record
+		format : Format_Type := f;
+		case f is
 			when Format_8 =>
 				b : Char_Array20;
 			when Format_16 =>
@@ -670,6 +673,7 @@ package Bindings.X11.Types is
 				l : Long_Array5;
 		end case;
 	end record;
+        pragma Unchecked_Union(XClientMessageEvent_Union);
 	pragma Convention(C, XClientMessageEvent_Union);
 
 	type XClientMessageEvent_Type is record
@@ -703,13 +707,14 @@ package Bindings.X11.Types is
 	end record;
 	pragma Convention(C, XAnyEvent_Type);
 
-	type Pad24_Type is array(0..24) of long;
+	type Pad24_Type is array(0 .. 24) of long;
 
-	type XEvent_Type(t : int := InvalidEvent) is record
+	type XEvent_Type(event_type : int := InvalidEvent) is record
+		t                     : int := event_type;
 		serial                : unsigned_long;
 		send_event            : Bool_Type;
 		display               : Display_Pointer;
-		case t is
+		case event_type is
 			when KeyPress | KeyRelease =>
 				xkey : XKeyEvent_Type;
 			when ButtonPress | ButtonRelease =>
@@ -772,6 +777,7 @@ package Bindings.X11.Types is
 				xany : XAnyEvent_Type;
 		end case;
 	end record;
+	pragma Unchecked_Union(XEvent_Type);
 	pragma Convention(C, XEvent_Type);
 
 	type XEvent_Pointer is access XEvent_Type;
