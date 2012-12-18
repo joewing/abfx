@@ -44,14 +44,9 @@ package body Calc is
 	ac_button   : Button_Type;
 	buttons     : array(1 .. 4, 1 .. 4) of Button_Type;
 
-	bar  : Menu_Bar_Type;
-	menu : Menu_Type;
-	bah  : Label_Type;
-
 	value        : Value_Type := 0.0;
 	last_op      : Character := ' ';
 	should_clear : Boolean := true;
-
 
 	function Contains(str : String; ch : Character) return Boolean is
 	begin
@@ -158,13 +153,6 @@ package body Calc is
 
 		X11.Panel.Layout.Vertical.Manage(win);
 		Set_Title(win, "Calc");
-
-		-- Add the menu bar.
-		Add(win, bar);
-		Add(bar, menu);
-		Set_Text(menu, "File");
-		Add(menu, bah);
-		Set_Text(bah, "bah");
 
 		-- Set up the output display
 		Set_Text(output, "0");
