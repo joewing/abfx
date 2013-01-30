@@ -1,7 +1,7 @@
 
 package X11.Logging is
 
-	procedure Debug(msg : in String);
+   procedure Debug(msg : in String);
 
 end X11.Logging;
 

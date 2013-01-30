@@ -2,10 +2,9 @@
 with Calc;
 
 procedure Main is
-
 begin
 
-	Calc.Run;
+   Calc.Run;
 
 end Main;
 

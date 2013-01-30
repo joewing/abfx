@@ -1,7 +1,7 @@
 
 package Calc is
 
-	procedure Run;
+   procedure Run;
 
 end Calc;
 
