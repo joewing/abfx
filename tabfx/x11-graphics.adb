@@ -99,6 +99,13 @@ package body X11.Graphics is
          int(x), int(y), int(width), int(height));
    end Draw_Rectangle;
 
+   procedure Fill_Rectangle(g : in Graphics_Type;
+      x, y : in Integer; width, height : in Natural) is
+   begin
+      XFillRectangle(display, g.drawable, g.gc,
+         int(x), int(y), int(width), int(height));
+   end Fill_Rectangle;
+
    procedure Draw_Border(g             : in out Graphics_Type;
                          x, y          : in Integer;
                          width, height : in Natural;

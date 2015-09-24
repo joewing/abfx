@@ -37,6 +37,9 @@ package X11.Graphics is
    procedure Draw_Rectangle(g : in Graphics_Type;
       x, y : in Integer; width, height : in Natural);
 
+   procedure Fill_Rectangle(g : in Graphics_Type;
+      x, y : in Integer; width, height : in Natural);
+
    procedure Draw_Border(g             : in out Graphics_Type;
                          x, y          : in Integer;
                          width, height : in Natural;

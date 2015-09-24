@@ -163,6 +163,14 @@ package Bindings.X11.Functions is
       width, height : int);
    pragma Import(C, XDrawRectangle, "XDrawRectangle");
 
+   procedure XFillRectangle(
+      display       : Display_Pointer;
+      d             : Drawable_Type;
+      g             : GC_Type;
+      x, y          : int;
+      width, height : int);
+   pragma Import(C, XFillRectangle, "XFillRectangle");
+
    function XSetBackground(display : Display_Pointer;
       g : GC_Type; color : unsigned_long) return int;
    pragma Import(C, XSetBackground, "XSetBackground");
