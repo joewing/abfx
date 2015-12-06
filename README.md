@@ -1,7 +1,9 @@
 
-Thick Ada Binding For X11 (tabfx).
+Ada Binding For X11 (abfx).
 ==============================================================================
 
-The tabfx directory contains the library.
-The calc directory contains an example application (a calculator).
+The abfx directory contains the library.
 
+Example applications:
+ * calc - A calculator
+ * maze - A maze generator

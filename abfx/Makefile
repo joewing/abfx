@@ -7,7 +7,7 @@ all:
 	mkdir -p ../adainclude
 	gnatmake $(ADACFLAGS) -c lib -largs $(ADALFLAGS)
 	rm lib.o lib.ali
-	gcc -shared -o ../lib/libtabfx.so *.o
+	gcc -shared -o ../lib/libabfx.so *.o
 	cp *.ali ../adainclude
 	cp *.ads ../adainclude
 
